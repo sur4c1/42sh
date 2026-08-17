@@ -1,5 +1,7 @@
 42sh
 
+objects.mk
+
 # Prerequisites
 *.d
 
