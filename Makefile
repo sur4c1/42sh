@@ -16,14 +16,11 @@ LIBS		= libs/libft/libft.a
 
 .DEFAULT_GOAL := all
 
-objects.mk: configure
-	./configure
-
 include objects.mk
 
 all: $(NAME)
 
-$(NAME): $(ODIR) $(OBJS) $(LIBS)
+$(NAME): objects.mk $(ODIR) $(OBJS) $(LIBS)
 	$(CC) $(OBJS) -o $(NAME) $(LDFLAGS)
 
 $(ODIR):
@@ -38,6 +35,12 @@ fclean: clean
 $(LDIR)/libft/libft.a:
 	$(MAKE) -C $(LDIR)/libft
 
-re: fclean all
+objects.mk: configure
+	./configure
 
-.PHONY: all clean fclean re
+runconf: configure
+	./configure
+
+re: fclean runconf all
+
+.PHONY: all clean fclean re runconf
