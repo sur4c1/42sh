@@ -6,18 +6,17 @@
 /*   By: yyyyyy <yyyyyy@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 13:24:04 by bguyot            #+#    #+#             */
-/*   Updated: 2024/11/21 05:52:09 by yyyyyy           ###   ########.fr       */
+/*   Updated: 2026/08/17 18:59:02 by yyyyyy           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_string.h"
 
-size_t	ft_strlen(const char *str)
+size_t
+ft_strlen(const char *str)
 {
-	const char	*s;
+	const char *s;
 
-	if (!str)
-		return (0);
 	s = str;
 	while (*s)
 		s++;
