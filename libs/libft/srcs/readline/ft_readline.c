@@ -6,7 +6,7 @@
 /*   By: yyyyyy <yyyyyy@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/17 19:03:44 by yyyyyy            #+#    #+#             */
-/*   Updated: 2026/08/18 20:25:59 by yyyyyy           ###   ########.fr       */
+/*   Updated: 2026/08/18 20:33:52 by yyyyyy           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,8 +76,29 @@ reset_cursor(char *prompt, char *buf)
 }
 
 static void
-handle_escape(size_t *cursor)
+handle_escape(size_t *cursor, size_t buflen)
 {
+	char c;
+
+	read(STDIN_FILENO, &c, 1);
+	if (c != '[')
+		return;
+	read(STDIN_FILENO, &c, 1);
+	switch (c)
+	{
+	case 'D':
+		if (*cursor)
+			(*cursor)--;
+		break;
+	case 'C':
+		if (*cursor < buflen - 2)
+			(*cursor)++;
+		break;
+	default: // skip and ignore
+		while (c && c != 4 && !(c >= 0x40 && c <= 0x7E))
+			read(STDIN_FILENO, &c, 1);
+		break;
+	}
 }
 
 char *
@@ -103,7 +124,7 @@ ft_readline(char *prompt, char *buf, size_t buflen)
 			if (cursor == 0)
 				return (NULL);
 		case 0x1B:
-			handle_escape(&cursor);
+			handle_escape(&cursor, buflen);
 			break;
 		case 0x7F:
 			if (cursor)
