@@ -6,10 +6,11 @@
 /*   By: yyyyyy <yyyyyy@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/17 19:03:44 by yyyyyy            #+#    #+#             */
-/*   Updated: 2026/08/18 20:33:52 by yyyyyy           ###   ########.fr       */
+/*   Updated: 2026/08/18 20:41:38 by yyyyyy           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "ft_memory.h"
 #include "ft_put.h"
 #include "ft_string.h"
 #include <sys/ioctl.h>
@@ -101,6 +102,13 @@ handle_escape(size_t *cursor, size_t buflen)
 	}
 }
 
+static void
+insert(char *buf, size_t buflen, char c, size_t pos)
+{
+	ft_memmove(buf + pos + 1, buf + pos, buflen - pos - 1);
+	buf[pos] = c;
+}
+
 char *
 ft_readline(char *prompt, char *buf, size_t buflen)
 {
@@ -128,18 +136,21 @@ ft_readline(char *prompt, char *buf, size_t buflen)
 			break;
 		case 0x7F:
 			if (cursor)
-				buf[--cursor] = 0;
+			{
+				ft_memmove(buf + cursor - 1, buf + cursor, buflen - cursor - 1);
+				cursor--;
+			}
 			break;
 		case '\t':
 			// handle autocomplete
 			break;
 		case '\n':
-			buf[cursor++] = c;
+			insert(buf, buflen, '\n', ft_strlen(buf));
 			write(STDOUT_FILENO, "\n", 1);
 			return (buf);
 		default:
 			if (cursor < buflen - 2)
-				buf[cursor++] = c;
+				insert(buf, buflen, c, cursor++);
 		}
 		write(STDOUT_FILENO, prompt, ft_strlen(prompt));
 		write(STDOUT_FILENO, buf, ft_strlen(buf));
