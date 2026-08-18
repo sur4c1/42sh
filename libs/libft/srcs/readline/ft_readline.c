@@ -6,47 +6,123 @@
 /*   By: yyyyyy <yyyyyy@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/17 19:03:44 by yyyyyy            #+#    #+#             */
-/*   Updated: 2026/08/17 20:04:44 by yyyyyy           ###   ########.fr       */
+/*   Updated: 2026/08/18 20:25:59 by yyyyyy           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "ft_put.h"
 #include "ft_string.h"
+#include <sys/ioctl.h>
+#include <termios.h>
 #include <unistd.h>
+
+static struct termios
+activate_raw(void)
+{
+	struct termios original;
+	struct termios raw;
+
+	ioctl(0, TCGETS, &original);
+	raw = original;
+	raw.c_lflag &= ~(ICANON | ECHO);
+	raw.c_cc[VMIN] = 1;
+	raw.c_cc[VTIME] = 0;
+	ioctl(0, TCSETS, &raw);
+	return (original);
+}
+
+static void
+evaluate_string_size(char *str, int win_w, int *w, int *h)
+{
+	while (*str)
+	{
+		if (*str == '\n')
+		{
+			*w = 0;
+			(*h)++;
+		}
+		else if (*w == win_w)
+		{
+			*w = 1;
+			(*h)++;
+		}
+		else
+			(*w)++;
+		str++;
+	}
+}
+
+static void
+reset_cursor(char *prompt, char *buf)
+{
+	struct winsize win;
+	int			   text_h;
+	int			   text_w;
+
+	ioctl(STDOUT_FILENO, TIOCGWINSZ, &win);
+	text_h = 1;
+	text_w = 0;
+	evaluate_string_size(prompt, win.ws_col, &text_w, &text_h);
+	evaluate_string_size(buf, win.ws_col, &text_w, &text_h);
+	if (text_h == 1)
+		ft_putstr_fd("\x1B[G", STDOUT_FILENO);
+	else
+	{
+		ft_putstr_fd("\x1B[", STDOUT_FILENO);
+		ft_putnbr_fd(text_h - 1, STDOUT_FILENO);
+		ft_putstr_fd("F", STDOUT_FILENO);
+	}
+	ft_putstr_fd("\x1B[J", STDOUT_FILENO);
+}
+
+static void
+handle_escape(size_t *cursor)
+{
+}
 
 char *
 ft_readline(char *prompt, char *buf, size_t buflen)
 {
-	ssize_t len;
-	char	c;
-	size_t	next_idx;
+	char		   c;
+	size_t		   cursor;
+	struct termios saved;
 
-	next_idx = 0;
+	cursor = 0;
+	saved = activate_raw();
+	ft_bzero(buf, buflen);
 	write(STDOUT_FILENO, prompt, ft_strlen(prompt));
-	while ((len = read(STDIN_FILENO, &c, 1)) >= 0)
+	while (read(STDIN_FILENO, &c, 1) >= 0)
 	{
-		if (!len)
-		{
-			if (!next_idx)
-				return (NULL);
-			else
-				c = 0;
-		}
+		reset_cursor(prompt, buf);
+		ft_putstr_fd("Recieved ", STDERR_FILENO);
+		ft_putnbr_fd(c, STDERR_FILENO);
+		ft_putendl_fd(" from read.", STDERR_FILENO);
 		switch (c)
 		{
-		case '\0':
+		case 0x04:
+			if (cursor == 0)
+				return (NULL);
+		case 0x1B:
+			handle_escape(&cursor);
+			break;
+		case 0x7F:
+			if (cursor)
+				buf[--cursor] = 0;
+			break;
+		case '\t':
+			// handle autocomplete
 			break;
 		case '\n':
-			if (next_idx == 0 || buf[next_idx - 1] != '\\')
-			{
-				buf[next_idx++] = '\n';
-				buf[next_idx] = '\0';
-				return (buf);
-			}
+			buf[cursor++] = c;
+			write(STDOUT_FILENO, "\n", 1);
+			return (buf);
 		default:
-			if (next_idx < buflen - 2)
-				buf[next_idx++] = c;
-			break;
+			if (cursor < buflen - 2)
+				buf[cursor++] = c;
 		}
+		write(STDOUT_FILENO, prompt, ft_strlen(prompt));
+		write(STDOUT_FILENO, buf, ft_strlen(buf));
 	}
+	ioctl(0, TCSETS, &saved);
 	return (NULL);
 }

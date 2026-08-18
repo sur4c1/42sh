@@ -6,7 +6,7 @@
 /*   By: yyyyyy <yyyyyy@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/17 18:46:19 by yyyyyy            #+#    #+#             */
-/*   Updated: 2026/08/17 19:54:24 by yyyyyy           ###   ########.fr       */
+/*   Updated: 2026/08/17 20:15:02 by yyyyyy           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ main(int argc, char *argv[])
 
 	while (1)
 	{
-		line = ft_readline(">", buffer, sizeof(buffer));
+		line = ft_readline("> ", buffer, sizeof(buffer));
 		if (!line)
 			break;
 		write(1, line, ft_strlen(line));
