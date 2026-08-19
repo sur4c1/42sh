@@ -6,7 +6,7 @@
 /*   By: yyyyyy <yyyyyy@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 08:49:24 by bguyot            #+#    #+#             */
-/*   Updated: 2025/10/20 22:10:08 by yyyyyy           ###   ########.fr       */
+/*   Updated: 2026/08/17 19:47:30 by yyyyyy           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,12 +40,5 @@ ft_putnbr_fd(int n, int fd);
 void
 ft_puttab_fd(char **tab, int fd);
 #define ft_puttab(c) ft_putchatab(c, 1)
-
-/**
- * @brief Write the data of size size in the given fd
- * @note The data is printed in hexadecimal and ascii
- */
-void
-ft_putdata_fd(void *data, size_t size, int fd);
 
 #endif

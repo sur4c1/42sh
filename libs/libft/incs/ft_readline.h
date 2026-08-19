@@ -1,24 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   ft_readline.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yyyyyy <yyyyyy@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/02/23 13:24:04 by bguyot            #+#    #+#             */
-/*   Updated: 2026/08/17 18:59:02 by yyyyyy           ###   ########.fr       */
+/*   Created: 2026/08/17 19:53:16 by yyyyyy            #+#    #+#             */
+/*   Updated: 2026/08/17 19:53:32 by yyyyyy           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_string.h"
+#include <unistd.h>
 
-size_t
-ft_strlen(const char *str)
-{
-	const char *s;
-
-	s = str;
-	while (*s)
-		s++;
-	return (s - str);
-}
+char *
+ft_readline(char *prompt, char *buf, size_t buflen);

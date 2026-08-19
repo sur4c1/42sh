@@ -9,10 +9,11 @@ CC			= cc
 RM			= rm -rf
 MKDIR		= mkdir -p
 CFLAGS		= -Wall -Wextra -Werror
-CFLAGS		+= -I$(IDIR) -I$(LDIR)/libft/incs
+CFLAGS		+= -I$(IDIR) -I$(LDIR)/libft
 LDFLAGS		= -L$(LDIR)/libft -lft
 
 LIBS		= libs/libft/libft.a
+OBJS = $(addprefix $(ODIR)/, $(addsuffix .o, $(SRCS)))
 
 .DEFAULT_GOAL := all
 
@@ -20,20 +21,22 @@ include objects.mk
 
 all: $(NAME)
 
-$(NAME): objects.mk $(ODIR) $(OBJS) $(LIBS)
+$(NAME): $(OBJS) $(LIBS)
 	$(CC) $(OBJS) -o $(NAME) $(LDFLAGS)
-
-$(ODIR):
-	$(MKDIR) $(ODIR)
 
 clean:
 	$(RM) $(ODIR)
 
 fclean: clean
 	$(RM) $(NAME) objects.mk
+	$(MAKE) -C $(LDIR)/libft
 
 $(LDIR)/libft/libft.a:
 	$(MAKE) -C $(LDIR)/libft
+
+$(ODIR)/%.o: $(SDIR)/%.c
+	$(MKDIR) $(dir $@)
+	$(CC) $(CFLAGS) -c -o $@ $^
 
 objects.mk: configure
 	./configure

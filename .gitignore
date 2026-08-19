@@ -1,6 +1,7 @@
 42sh
 
 objects.mk
+logs
 
 # Prerequisites
 *.d
